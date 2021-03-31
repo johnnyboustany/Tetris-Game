@@ -1,128 +1,152 @@
 package tetris;
-
-import javafx.animation.Animation;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.scene.input.KeyCode;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
-import javafx.util.Duration;
 
 public class Piece {
-
-    private TetrisSquare[] _rectArray;
-    private int[][] PIECE_COORDS;
+    private TetrisSquare[] _squareArray;
+    private int[][] _pieceCoordsArray;
     private Pane _boardPane;
     private Color _color;
+    private TetrisSquare[][] _board;
 
-    public Piece(Pane boardPane) {
-        _rectArray = new TetrisSquare[4];
-        PIECE_COORDS = new int[2][4];
+    public Piece(Pane boardPane, TetrisSquare[][] _board2D) {
+        _squareArray = new TetrisSquare[Constants.SQUARE_ARRAY_NUM_IND];
+        _pieceCoordsArray = new int[Constants.PIECE_ARRAY_NUM_ROW][Constants.PIECE_ARRAY_NUM_COL];
         _boardPane = boardPane;
+        _board = _board2D;
 
-        int randInt = (int) (Math.random() * 7);
+        int randInt = (int) (Math.random() * Constants.FACTOR_RANDOM);
         switch (randInt) {
             case 0:
-                PIECE_COORDS = Constants.I_PIECE_COORDS;
+                _pieceCoordsArray = Constants.I_PIECE_COORDS;
                 _color = Color.RED;
                 break;
             case 1:
-                PIECE_COORDS = Constants.O_PIECE_COORDS;
+                _pieceCoordsArray = Constants.O_PIECE_COORDS;
                 _color = Color.CYAN;
                 break;
             case 2:
-                PIECE_COORDS = Constants.L_PIECE_COORDS;
+                _pieceCoordsArray = Constants.L_PIECE_COORDS;
                 _color = Color.LIME;
                 break;
             case 3:
-                PIECE_COORDS = Constants.INV_L_PIECE_COORDS;
+                _pieceCoordsArray= Constants.INV_L_PIECE_COORDS;
                 _color = Color.YELLOW;
                 break;
             case 4:
-                PIECE_COORDS = Constants.S_PIECE_COORDS;
+                _pieceCoordsArray = Constants.S_PIECE_COORDS;
                 _color = Color.ORANGE;
                 break;
             case 5:
-                PIECE_COORDS = Constants.INV_S_PIECE_COORDS;
+                _pieceCoordsArray = Constants.INV_S_PIECE_COORDS;
                 _color = Color.HOTPINK;
                 break;
             default:
-                PIECE_COORDS = Constants.T_PIECE_COORDS;
+                _pieceCoordsArray = Constants.T_PIECE_COORDS;
                 _color = Color.MAGENTA;
                 break;
         }
-
-            this.setupPiece(150,0);
-
-
-
+            this.setUpPiece(Constants.PIECE_START_X,Constants.PIECE_START_Y);
     }
 
-//Add to Board method
-    public TetrisSquare addtoBoard(int i) {
-
-          return _rectArray[i];
+    public void addToBoard() {
+        for (int i = 0; i < Constants.SQUARE_ARRAY_NUM_IND; i++) {
+            int row = _squareArray[i].getYLocation()/Constants.SQUARE_WIDTH;
+            int col = _squareArray[i].getXLocation()/Constants.SQUARE_WIDTH;
+            _board[row][col] = _squareArray[i];
+        }
     }
 
-
-    public void setupPiece(int x, int y) {
-
-        for (int i = 0; i < 4; i++) {
+    public void setUpPiece(int x, int y) {
+        for (int i = 0; i < Constants.SQUARE_ARRAY_NUM_IND; i++) {
             TetrisSquare rect = new TetrisSquare();
             rect.getRect().setFill(_color);
+            rect.setXLocation(x+_pieceCoordsArray[i][0]);
+            rect.setYLocation(y+_pieceCoordsArray[i][1]);
 
-            rect.setXLocation(x+PIECE_COORDS[i][0]);
-            rect.setYLocation(y+PIECE_COORDS[i][1]);
-
-            _rectArray[i] = rect;
+            _squareArray[i] = rect;
             _boardPane.getChildren().add(rect.getRect());
         }
     }
 
-    public void movePieceX(int x) {
-
-        for (int i = 0; i < 4; i++) {
-            _rectArray[i].setXLocation(_rectArray[i].getXLocation()+x);
+    public void movePiece(int x, int y) {
+        if(ifMoveIsValid(x,y) == true){
+            for (int i = 0; i < Constants.SQUARE_ARRAY_NUM_IND; i++) {
+                int xPosition = _squareArray[i].getXLocation()+x;
+                int yPosition = _squareArray[i].getYLocation()+y;
+                _squareArray[i].setXLocation(xPosition);
+                _squareArray[i].setYLocation(yPosition);
+            }
         }
     }
 
-    public void movePieceY(int y) {
-        for (int i = 0; i < 4; i++) {
-            _rectArray[i].setYLocation(_rectArray[i].getYLocation()+y);
+    public boolean ifMoveIsValid(int x, int y){
+        for (int i = 0; i < Constants.SQUARE_ARRAY_NUM_IND; i++) {
+            int xPosition = _squareArray[i].getXLocation()+x;
+            int yPosition = _squareArray[i].getYLocation()+y;
+            int row = yPosition/Constants.SQUARE_WIDTH;
+            int col = xPosition/Constants.SQUARE_WIDTH;
+
+            if(_board[row][col] != null){
+                return false;
+            }
         }
-    }
+        return true;
+        }
 
     public void rotatePiece(){
+        int centerOfRotationX = _squareArray[0].getXLocation();
+        int centerOfRotationY = _squareArray[0].getYLocation();
 
-            int centerOfRotationX = _rectArray[0].getXLocation();
-            int centerOfRotationY = _rectArray[0].getYLocation();
+        if(ifRotationIsValid()){
+            for (int i = 1; i < Constants.SQUARE_ARRAY_NUM_IND; i++) {
+                int oldXLocation = _squareArray[i].getXLocation();
+                int oldYLocation = _squareArray[i].getYLocation();;
+                int newXLoc = centerOfRotationX - centerOfRotationY + oldYLocation;
+                int newYLoc = centerOfRotationY + centerOfRotationX - oldXLocation;
 
+                _squareArray[i].setXLocation(newXLoc);
+                _squareArray[i].setYLocation(newYLoc);
+            }
+        }
+    }
 
-        for (int i = 1; i < 4; i++) {
-            int oldXLocation = _rectArray[i].getXLocation();
-            int oldYLocation = _rectArray[i].getYLocation();;
+    public boolean ifRotationIsValid(){
+        int centerOfRotationX = _squareArray[0].getXLocation();
+        int centerOfRotationY = _squareArray[0].getYLocation();
+
+        for (int i = 1; i < Constants.SQUARE_ARRAY_NUM_IND; i++) {
+            int oldXLocation = _squareArray[i].getXLocation();
+            int oldYLocation = _squareArray[i].getYLocation();
+
             int newXLoc = centerOfRotationX - centerOfRotationY + oldYLocation;
             int newYLoc = centerOfRotationY + centerOfRotationX - oldXLocation;
 
-            //if(newXLoc < 270 && newXLoc > 30 && newYLoc < 570 && newYLoc > 30){
-                _rectArray[i].setXLocation(newXLoc);
-                _rectArray[i].setYLocation(newYLoc);
-            //} else {
-           //     break;
-           // }
+            int row = newYLoc/Constants.SQUARE_WIDTH;
+            int col = newXLoc/Constants.SQUARE_WIDTH;
 
+            if (_board[row][col] != null) {
+                return false;
+            }
         }
-
-        }
-
-
-
-        
-
-
+        return true;
     }
+
+    public void dropToLowest(){
+        while(ifMoveIsValid(0, Constants.SQUARE_WIDTH)){
+
+            for (int i = 0; i < Constants.SQUARE_ARRAY_NUM_IND; i++) {
+                int yPosition = _squareArray[i].getYLocation()+Constants.SQUARE_WIDTH;
+                _squareArray[i].setYLocation(yPosition);
+            }
+        }
+    }
+}
+
+
+
+
+
+
 
 
