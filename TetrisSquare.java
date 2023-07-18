@@ -27,7 +27,6 @@ private Rectangle _rect;
     public int getXLocation(){
         return (int) (_rect.getX());
     }
-
     public int getYLocation(){
         return (int) (_rect.getY());
     }
