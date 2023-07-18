@@ -1,4 +1,6 @@
-# Tetris-Game Project
+# Tetris-Game
+
+Welcome to the Tetris-Game project! This implementation brings the iconic Tetris puzzle game to life with Java, offering an engaging and interactive experience for players. The game revolves around strategically placing falling tetrominoes to create solid rows, which then disappear, earning points for the player.
 
 ## Overview:
 
