@@ -1,8 +1,6 @@
 package tetris;
 
 public class Constants {
-     // TODO: fill this class in with any more constants you might need!
-
     // width of each square
     public static final int SQUARE_WIDTH = 30;
     public static final int PIECE_START_X = 150;
