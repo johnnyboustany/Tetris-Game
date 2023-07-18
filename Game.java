@@ -24,7 +24,6 @@ public class Game {
     private Label _label1;
     private Label _label2;
 
-
     public Game(Pane boardPane) {
         _board = new TetrisSquare[Constants.NUM_ROWS][Constants.NUM_COLS];
         _boardPane = boardPane;
@@ -52,7 +51,6 @@ public class Game {
                     _boardPane.getChildren().add(rect.getRect());
                     rect.setXLocation(col * Constants.SQUARE_WIDTH);
                     rect.setYLocation(row * Constants.SQUARE_WIDTH);
-
                 }
             }
         }
