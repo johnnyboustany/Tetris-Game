@@ -9,7 +9,6 @@ import javafx.scene.layout.Pane;
 
 public class PaneOrganizer {
     private BorderPane _root;
-
     public PaneOrganizer(){
         _root = new BorderPane();
         Pane boardPane = new Pane();
