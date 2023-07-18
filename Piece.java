@@ -131,7 +131,6 @@ public class Piece {
         }
         return true;
     }
-
     public void dropToLowest(){
         while(ifMoveIsValid(0, Constants.SQUARE_WIDTH)){
 
