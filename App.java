@@ -9,8 +9,6 @@ import javafx.stage.Stage;
  * The main method of this application calls the start method. You
  * will need to fill in the start method to instantiate your game.
  *
- * Class comments here...
- *
  */
 
 public class App extends Application {
